@@ -91,20 +91,18 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
     private final PointCloudRenderer pointCloud = new PointCloudRenderer();
 
     // Temporary matrix allocated here to reduce number of allocations for each frame.
-    private float[] virtualObjectModelMatrix1 = new float[16];
-    private float[] virtualObjectModelMatrix2 = new float[16];
-    private float[] robotModelMatrixTemp = new float[16];
-    private float[] virtualObjectModelMatrixTemp = new float[16];
-    private float[] robotAnimationModelMatrixTemp = new float[16];
-    private float[] robotRotateMatrix = new float[16];
-    private float[] temp1 = new float[16];
-
+    private float[] boxObjectModelMatrix1 = new float[16];
+    private float[] boxObjectModelMatrix2 = new float[16];
+    private float[] penguinModelMatrix = new float[16];
+    private float[] penguinModelMatrixTemp = new float[16];
+    private float[] boxObjectModelMatrixTemp = new float[16];
+    private float[] penguinAnimationModelMatrixTemp = new float[16];
+    private float[] penguinRotateMatrix = new float[16];
 
     // Tap handling and UI.
     private final ArrayBlockingQueue<MotionEvent> queuedSingleTaps = new ArrayBlockingQueue<>(16);
     private final ArrayList<float[]> virtualModelMatrixList = new ArrayList<>();
     private final ArrayList<float[]> robotModelMatrixList = new ArrayList<>();
-    private final float[] robotModelMatrix = new float[16];
 
     private boolean isGameOver = true;
     private boolean direction = true;
@@ -116,7 +114,6 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
     private float yTranslateStride = 0f;
     private float downTime;
     private float upTime;
-    //    private float virtualObjectScaleFactor = 0.0012f;
     private float virtualObjectScaleFactor = 0.0009f;
     private float robotScaleFactor = 15f;
     private float translateStride = 0f;
@@ -334,7 +331,7 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
         // Prepare the other rendering objects.
         try {
             virtualObject.createOnGlThread(/*context=*/ this, "webox.obj", "webox.png");
-            robot.createOnGlThread(/*context=*/ this, "webanktest.obj", "webanktest.png");
+            robot.createOnGlThread(/*context=*/ this, "wepenguin.obj", "wepenguin.png");
 
             //这里采用默认的BlendModeo：BlendMode.Opaque
             virtualObject.setMaterialProperties(0.0f, 3.5f, 1.0f, 6.0f);
@@ -402,7 +399,7 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
 
                             hitAnchor = hit.createAnchor();
                             isGameOver = false;
-                            Log.e(TAG, "产生新的tap，第" + n + "次游戏开始了！");
+                            Logger.d(TAG, "产生新的tap，第" + n + "次游戏开始了！");
                             n++;
                             break;
                         }
@@ -477,23 +474,23 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
             }
             if (virtualModelMatrixList.size() == 0) {
                 playVoice(R.raw.game_start);
-                hitAnchor.getPose().toMatrix(virtualObjectModelMatrix1, 0);
-                virtualObject.updateModelMatrix(virtualObjectModelMatrix1, virtualObjectScaleFactor);
+                hitAnchor.getPose().toMatrix(boxObjectModelMatrix1, 0);
+                virtualObject.updateModelMatrix(boxObjectModelMatrix1, virtualObjectScaleFactor);
                 virtualObject.draw(viewmtx, projmtx, lightIntensity);
-                virtualModelMatrixList.add(virtualObjectModelMatrix1);
+                virtualModelMatrixList.add(boxObjectModelMatrix1);
 
-                hitAnchor.getPose().toMatrix(robotModelMatrix, 0);
-                translateM(robotModelMatrix, 0, 0, robotY, 0);
-                robot.updateModelMatrix(rotateRobot(robotModelMatrix), robotScaleFactor);
+                hitAnchor.getPose().toMatrix(penguinModelMatrix, 0);
+                translateM(penguinModelMatrix, 0, 0, robotY, 0);
+                robot.updateModelMatrix(rotateRobot(penguinModelMatrix), robotScaleFactor);
                 robot.draw(viewmtx, projmtx, lightIntensity);
-                robotModelMatrixList.add(robotModelMatrix);
+                robotModelMatrixList.add(penguinModelMatrix);
 
 
-                hitAnchor.getPose().toMatrix(virtualObjectModelMatrix2, 0);
-                translateM(virtualObjectModelMatrix2, 0, 0.45f, 0f, 0f);
-                virtualObject.updateModelMatrix(virtualObjectModelMatrix2, virtualObjectScaleFactor);
+                hitAnchor.getPose().toMatrix(boxObjectModelMatrix2, 0);
+                translateM(boxObjectModelMatrix2, 0, 0.45f, 0f, 0f);
+                virtualObject.updateModelMatrix(boxObjectModelMatrix2, virtualObjectScaleFactor);
                 virtualObject.draw(viewmtx, projmtx, lightIntensity);
-                virtualModelMatrixList.add(virtualObjectModelMatrix2);
+                virtualModelMatrixList.add(boxObjectModelMatrix2);
                 isFirstDrawComplete = true;
 
             } else {
@@ -514,15 +511,15 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
     }
 
     private float[] rotateRobot(float[] robotModelMatrix) {
-        System.arraycopy(robotModelMatrix, 0, robotRotateMatrix, 0, robotModelMatrix.length);
+        System.arraycopy(robotModelMatrix, 0, penguinRotateMatrix, 0, robotModelMatrix.length);
         if (direction) {
             robotRotateAngle = -90;
-            rotateM(robotRotateMatrix, 0, robotRotateAngle, 0f, 1f, 0f);
-            return robotRotateMatrix;
+            rotateM(penguinRotateMatrix, 0, robotRotateAngle, 0f, 1f, 0f);
+            return penguinRotateMatrix;
         } else {
             robotRotateAngle = -180;
-            rotateM(robotRotateMatrix, 0, robotRotateAngle, 0f, 1f, 0f);
-            return robotRotateMatrix;
+            rotateM(penguinRotateMatrix, 0, robotRotateAngle, 0f, 1f, 0f);
+            return penguinRotateMatrix;
         }
     }
 
@@ -596,8 +593,8 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
                 }
             }
 
-                        planeRenderer.drawPlanes(
-                                session.getAllTrackables(Plane.class), camera.getDisplayOrientedPose(), projmtxNew);
+            planeRenderer.drawPlanes(
+                    session.getAllTrackables(Plane.class), camera.getDisplayOrientedPose(), projmtxNew);
 
             drawOriginVirtual(viewmtxNew, projmtxNew, lightIntensityNew);
             drawRobotAnimation(viewmtxNew, projmtxNew, lightIntensityNew);
@@ -609,174 +606,12 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
     }
 
 
-   /* private void drawRobotAnimation(float[] viewmtxNew, float[] projmtxNew, float lightIntensityNew) {
-
-        float[] lastVirtualModelMatrix = virtualModelMatrixList.get(virtualModelMatrixList.size() - 1);
-        float[] robotModelMatrix = robotModelMatrixList.get(0);
-        System.arraycopy(robotModelMatrix, 0, robotModelMatrixTemp, 0, robotModelMatrix.length);
-        System.arraycopy(lastVirtualModelMatrix, 0, virtualObjectModelMatrixTemp, 0, lastVirtualModelMatrix.length);
-
-        float X1 = robotModelMatrix[12];
-        float Z1 = robotModelMatrix[14];
-
-        float X2 = lastVirtualModelMatrix[12];
-        float Z2 = lastVirtualModelMatrix[14];
-
-        Logger.d("X1=" + X1);
-        Logger.d("X2=" + X2);
-        Logger.d("Z1=" + Z1);
-        Logger.d("Z2=" + Z2);
-
-
-        if (direction) {
-            Logger.d("X轴方向");
-            if (translateStride <= jumpDistance) {
-//                Logger.d("平移之前");
-//
-//                Logger.d("robotModelMatrixTemp[12]=" + robotModelMatrixTemp[12]);
-//                Logger.d("robotModelMatrixTemp[14]=" + robotModelMatrixTemp[14]);
-//                for (int i = 0; i < robotModelMatrixTemp.length; i++) {
-//                    Logger.d("robotModelMatrixTemp[" + i + "]=" + robotModelMatrixTemp[i]);
-//
-//                }
-
-                translateM(robotModelMatrixTemp, 0, translateStride, yTranslateStride, 0);
-//                Logger.d("平移之后");
-//                Logger.d("robotModelMatrixTemp[12]=" + robotModelMatrixTemp[12]);
-//                Logger.d("robotModelMatrixTemp[14]=" + robotModelMatrixTemp[14]);
-//                for (int i = 0; i < robotModelMatrixTemp.length; i++) {
-//                    Logger.d("robotModelMatrixTemp[" + i + "]=" + robotModelMatrixTemp[i]);
-//
-//                }
-
-                rotateM(robotModelMatrixTemp, 0, zRotateStride, 0f, 1f, 0f);
-//                Logger.d("旋转之后");
-//                Logger.d("robotModelMatrixTemp[12]=" + robotModelMatrixTemp[12]);
-//                Logger.d("robotModelMatrixTemp[14]=" + robotModelMatrixTemp[14]);
-//                for (int i = 0; i < robotModelMatrixTemp.length; i++) {
-//                    Logger.d("robotModelMatrixTemp[" + i + "]=" + robotModelMatrixTemp[i]);
-//
-//                }
-
-                Logger.d("translateM中的xTranslateStride=" + translateStride);
-                Logger.d("translateM中的yTranslateStride=" + yTranslateStride);
-                Logger.d("rotateM中的zRotateStride=" + zRotateStride);
-                robotX = robotModelMatrixTemp[12];
-                robotZ = robotModelMatrixTemp[14];
-                Logger.d("robotX = robotModelMatrixTemp[12])=" + robotX);
-                Logger.d("robotZ = robotModelMatrixTemp[14])=" + robotZ);
-
-                robot.updateModelMatrix(rotateRobot(robotModelMatrixTemp), robotScaleFactor);
-                System.arraycopy(robotModelMatrixTemp, 0, robotAnimationModelMatrixTemp, 0, robotModelMatrixTemp.length);
-                robot.draw(viewmtxNew, projmtxNew, lightIntensityNew);
-                changeStride();
-
-            } else {
-                if ((X2 - halfWidthOftheBox) <= robotX && robotX <= (X2 + halfWidthOftheBox)
-                        && (Z2 - halfWidthOftheBox) <= robotZ && robotZ <= (Z2 + halfWidthOftheBox)) {
-                    Logger.d("小机器人跳起后的位置符合要求，第" + jumpSuccessNum + "次落在桌子范围内");
-                    jumpSuccessNum++;
-                    Logger.d("X2 - halfWidthOftheBox=" + (X2 - halfWidthOftheBox));
-                    Logger.d("robotX=" + robotX);
-                    Logger.d("X2 + halfWidthOftheBox=" + (X2 + halfWidthOftheBox));
-                    Log.d(TAG, ".............");
-                    Logger.d("Z2 - halfWidthOftheBox=" + (Z2 - halfWidthOftheBox));
-                    Logger.d("robotZ=" + robotZ);
-                    Logger.d("Z2 + halfWidthOftheBox=" + (Z2 + halfWidthOftheBox));
-                    drawNewVirturalObject(virtualObjectModelMatrixTemp, viewmtxNew, projmtxNew, lightIntensityNew);
-                    updateRobotModelMatrix(robotAnimationModelMatrixTemp, robotModelMatrix);
-                    playVoice(R.raw.jump_success);
-                } else {
-                    Logger.d(TAG, "小机器人跳起后的位置不符合要求，第" + jumpfailNum + "次落在桌子范围之外");
-                    jumpfailNum++;
-                    Logger.d(TAG, "X2 - halfWidthOftheBox=" + (X2 - halfWidthOftheBox));
-                    Logger.d(TAG, "robotX=" + robotX);
-                    Logger.d(TAG, "X2 + halfWidthOftheBox=" + (X2 + halfWidthOftheBox));
-                    Log.d(TAG, ".............");
-                    Logger.d("Z2 - halfWidthOftheBox=" + (Z2 - halfWidthOftheBox));
-                    Logger.d("robotZ=" + robotZ);
-                    Logger.d("Z2 + halfWidthOftheBox=" + (Z2 + halfWidthOftheBox));
-
-                    isFirstDrawComplete = false;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            gameOver(mContext);
-                        }
-                    });
-                }
-            }
-
-        } else {
-            Logger.d("Z轴方向");
-            if (translateStride <= jumpDistance) {
-//                Logger.d("平移之前");
-//                Logger.d("robotModelMatrixTemp[12]=" + robotModelMatrixTemp[12]);
-//                Logger.d("robotModelMatrixTemp[14]=" + robotModelMatrixTemp[14]);
-
-                translateM(robotModelMatrixTemp, 0, 0, yTranslateStride, translateStride);
-//                Logger.d("平移之后");
-//                Logger.d("robotModelMatrixTemp[12]=" + robotModelMatrixTemp[12]);
-//                Logger.d("robotModelMatrixTemp[14]=" + robotModelMatrixTemp[14]);
-
-                rotateM(robotModelMatrixTemp, 0, zRotateStride, 0f, 1f, 0f);
-//                Logger.d("旋转之后");
-//                Logger.d("robotModelMatrixTemp[12]=" + robotModelMatrixTemp[12]);
-//                Logger.d("robotModelMatrixTemp[14]=" + robotModelMatrixTemp[14]);
-
-                Logger.d(TAG, "translateM中的xTranslateStride=" + translateStride);
-                Logger.d(TAG, "translateM中的yTranslateStride=" + yTranslateStride);
-                Logger.d(TAG, "rotateM中的zRotateStride=" + zRotateStride);
-                robotX = robotModelMatrixTemp[12];
-                robotZ = robotModelMatrixTemp[14];
-//                Logger.d("robotZ = robotModelMatrixTemp[14])=" + robotZ);
-                Logger.d("robotX = robotModelMatrixTemp[12])=" + robotX);
-                Logger.d("robotZ = robotModelMatrixTemp[14])=" + robotZ);
-
-                robot.updateModelMatrix(rotateRobot(robotModelMatrixTemp), robotScaleFactor);
-                System.arraycopy(robotModelMatrixTemp, 0, robotAnimationModelMatrixTemp, 0, robotModelMatrixTemp.length);
-                robot.draw(viewmtxNew, projmtxNew, lightIntensityNew);
-                changeStride();
-
-            } else {
-                if ((X2 - halfWidthOftheBox) <= robotX && robotX <= (X2 + halfWidthOftheBox)
-                        && (Z2 - halfWidthOftheBox) <= robotZ && robotZ <= (Z2 + halfWidthOftheBox)) {
-                    Logger.d(TAG, "小机器人跳起后的位置符合要求，第" + jumpSuccessNum + "次落在桌子范围内");
-                    jumpSuccessNum++;
-                    Logger.d(TAG, "Z2 =" + (Z2));
-                    Logger.d(TAG, "robotZ=" + robotZ);
-                    Logger.d(TAG, "Z2 + halfWidthOftheBox=" + (Z2 + halfWidthOftheBox));
-
-                    drawNewVirturalObject(virtualObjectModelMatrixTemp, viewmtxNew, projmtxNew, lightIntensityNew);
-                    updateRobotModelMatrix(robotAnimationModelMatrixTemp, robotModelMatrix);
-                    playVoice(R.raw.jump_success);
-                } else {
-                    Logger.d(TAG, "小机器人跳起后的位置不符合要求，第" + jumpfailNum + "次落在桌子范围之外");
-                    jumpfailNum++;
-                    Logger.d(TAG, "Z2 =" + (Z2));
-                    Logger.d(TAG, "robotZ=" + robotZ);
-                    Logger.d(TAG, "Z2 + halfWidthOftheBox=" + (Z2 + halfWidthOftheBox));
-
-                    isFirstDrawComplete = false;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            gameOver(mContext);
-                        }
-                    });
-
-                }
-            }
-        }
-    }
-*/
-
     private void drawRobotAnimation(float[] viewmtxNew, float[] projmtxNew, float lightIntensityNew) {
 
         float[] lastVirtualModelMatrix = virtualModelMatrixList.get(virtualModelMatrixList.size() - 1);
         float[] robotModelMatrix = robotModelMatrixList.get(0);
-        System.arraycopy(robotModelMatrix, 0, robotModelMatrixTemp, 0, robotModelMatrix.length);
-        System.arraycopy(lastVirtualModelMatrix, 0, virtualObjectModelMatrixTemp, 0, lastVirtualModelMatrix.length);
+        System.arraycopy(robotModelMatrix, 0, penguinModelMatrixTemp, 0, robotModelMatrix.length);
+        System.arraycopy(lastVirtualModelMatrix, 0, boxObjectModelMatrixTemp, 0, lastVirtualModelMatrix.length);
 
         float X1 = robotModelMatrix[12];
         float Z1 = robotModelMatrix[14];
@@ -793,18 +628,18 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
         if (direction) {
             Logger.d("X轴方向");
             if (translateStride <= jumpDistance) {
-                translateM(robotModelMatrixTemp, 0, translateStride, yTranslateStride, 0);
-                rotateM(robotModelMatrixTemp, 0, zRotateStride, 0f, 1f, 0f);
+                translateM(penguinModelMatrixTemp, 0, translateStride, yTranslateStride, 0);
+                rotateM(penguinModelMatrixTemp, 0, zRotateStride, 0f, 1f, 0f);
                 Logger.d("translateM中的xTranslateStride=" + translateStride);
                 Logger.d("translateM中的yTranslateStride=" + yTranslateStride);
                 Logger.d("rotateM中的zRotateStride=" + zRotateStride);
-                robotX = robotModelMatrixTemp[12];
-                robotZ = robotModelMatrixTemp[14];
-                Logger.d("robotX = robotModelMatrixTemp[12])=" + robotX);
-                Logger.d("robotZ = robotModelMatrixTemp[14])=" + robotZ);
+                robotX = penguinModelMatrixTemp[12];
+                robotZ = penguinModelMatrixTemp[14];
+                Logger.d("robotX = penguinModelMatrixTemp[12])=" + robotX);
+                Logger.d("robotZ = penguinModelMatrixTemp[14])=" + robotZ);
 
-                robot.updateModelMatrix(rotateRobot(robotModelMatrixTemp), robotScaleFactor);
-                System.arraycopy(robotModelMatrixTemp, 0, robotAnimationModelMatrixTemp, 0, robotModelMatrixTemp.length);
+                robot.updateModelMatrix(rotateRobot(penguinModelMatrixTemp), robotScaleFactor);
+                System.arraycopy(penguinModelMatrixTemp, 0, penguinAnimationModelMatrixTemp, 0, penguinModelMatrixTemp.length);
                 robot.draw(viewmtxNew, projmtxNew, lightIntensityNew);
                 changeStride();
 
@@ -820,8 +655,8 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
                     Logger.d("Z2 - halfWidthOftheBox=" + (Z2 - halfWidthOftheBox));
                     Logger.d("robotZ=" + robotZ);
                     Logger.d("Z2 + halfWidthOftheBox=" + (Z2 + halfWidthOftheBox));
-                    drawNewVirturalObject(virtualObjectModelMatrixTemp, viewmtxNew, projmtxNew, lightIntensityNew);
-                    updateRobotModelMatrix(robotAnimationModelMatrixTemp, robotModelMatrix);
+                    drawNewVirturalObject(boxObjectModelMatrixTemp, viewmtxNew, projmtxNew, lightIntensityNew);
+                    updateRobotModelMatrix(penguinAnimationModelMatrixTemp, robotModelMatrix);
                     playVoice(R.raw.jump_success);
                 } else {
                     Logger.d(TAG, "小机器人跳起后的位置不符合要求，第" + jumpfailNum + "次落在桌子范围之外");
@@ -847,18 +682,18 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
         } else {
             Logger.d("Z轴方向");
             if (translateStride <= jumpDistance) {
-                translateM(robotModelMatrixTemp, 0, 0, yTranslateStride, translateStride);
-                rotateM(robotModelMatrixTemp, 0, zRotateStride, 0f, 1f, 0f);
+                translateM(penguinModelMatrixTemp, 0, 0, yTranslateStride, translateStride);
+                rotateM(penguinModelMatrixTemp, 0, zRotateStride, 0f, 1f, 0f);
                 Logger.d(TAG, "translateM中的xTranslateStride=" + translateStride);
                 Logger.d(TAG, "translateM中的yTranslateStride=" + yTranslateStride);
                 Logger.d(TAG, "rotateM中的zRotateStride=" + zRotateStride);
-                robotX = robotModelMatrixTemp[12];
-                robotZ = robotModelMatrixTemp[14];
-                Logger.d("robotX = robotModelMatrixTemp[12])=" + robotX);
-                Logger.d("robotZ = robotModelMatrixTemp[14])=" + robotZ);
+                robotX = penguinModelMatrixTemp[12];
+                robotZ = penguinModelMatrixTemp[14];
+                Logger.d("robotX = penguinModelMatrixTemp[12])=" + robotX);
+                Logger.d("robotZ = penguinModelMatrixTemp[14])=" + robotZ);
 
-                robot.updateModelMatrix(rotateRobot(robotModelMatrixTemp), robotScaleFactor);
-                System.arraycopy(robotModelMatrixTemp, 0, robotAnimationModelMatrixTemp, 0, robotModelMatrixTemp.length);
+                robot.updateModelMatrix(rotateRobot(penguinModelMatrixTemp), robotScaleFactor);
+                System.arraycopy(penguinModelMatrixTemp, 0, penguinAnimationModelMatrixTemp, 0, penguinModelMatrixTemp.length);
                 robot.draw(viewmtxNew, projmtxNew, lightIntensityNew);
                 changeStride();
 
@@ -876,8 +711,8 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
                     Logger.d("Z2 + halfWidthOftheBox=" + (Z2 + halfWidthOftheBox));
 
 
-                    drawNewVirturalObject(virtualObjectModelMatrixTemp, viewmtxNew, projmtxNew, lightIntensityNew);
-                    updateRobotModelMatrix(robotAnimationModelMatrixTemp, robotModelMatrix);
+                    drawNewVirturalObject(boxObjectModelMatrixTemp, viewmtxNew, projmtxNew, lightIntensityNew);
+                    updateRobotModelMatrix(penguinAnimationModelMatrixTemp, robotModelMatrix);
                     playVoice(R.raw.jump_success);
                 } else {
                     Logger.d(TAG, "小机器人跳起后的位置不符合要求，第" + jumpfailNum + "次落在桌子范围之外");
