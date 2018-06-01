@@ -4,9 +4,9 @@
 
 步骤| 图片|步骤|图片
 ---|---|---|---
-步骤一：识别平面 | <img src="http://git.weoa.com/jasoncai/WeAr/blob/master/ar/src/main/assets/1.png" width=230 height=409 />|步骤二：开始游戏 |  <img src="http://git.weoa.com/jasoncai/WeAr/blob/master/ar/src/main/assets/2.png" width=230 height=409 />
-步骤三：初始化 |  <img src="http://git.weoa.com/jasoncai/WeAr/blob/master/ar/src/main/assets/3.png" width=230 height=409 />|步骤四：游戏中 |  <img src="http://git.weoa.com/jasoncai/WeAr/blob/master/ar/src/main/assets/4.png" width=230 height=409 />
-步骤五：游戏结束 |  <img src="http://git.weoa.com/jasoncai/WeAr/blob/master/ar/src/main/assets/5.png" width=230 height=409 />|渲染说明|<br>截图中的白色菱形为ARCore识别<br/>出来的平面；蓝色的点为特征点，<br/>用于计算位置变换
+步骤一：识别平面 | <img src="https://github.com/91Shenlan/WeAr/raw/master/ar/src/main/assets/1.png" width=230 height=409 />|步骤二：开始游戏 |  <img src="https://github.com/91Shenlan/WeAr/raw/master/ar/src/main/assets/2.png" width=230 height=409 />
+步骤三：初始化 |  <img src="https://github.com/91Shenlan/WeAr/raw/master/ar/src/main/assets/3.png" width=230 height=409 />|步骤四：游戏中 |  <img src="https://github.com/91Shenlan/WeAr/raw/master/ar/src/main/assets/5.png" width=230 height=409 />
+步骤五：游戏结束 |  <img src="https://github.com/91Shenlan/WeAr/raw/master/ar/src/main/assets/5.png" width=230 height=409 />|渲染说明|<br>截图中的白色菱形为ARCore识别<br/>出来的平面；蓝色的点为特征点，<br/>用于计算位置变换
 
 
 ### Title
@@ -24,7 +24,7 @@
 
 
 ### Installation
-本项目提供一个apk，想直接体验的可以直接点击[WeAr](http://git.weoa.com/jasoncai/WeAr/raw/master/WeAr.apk)下载到本地安装即可；当然也可以用android studio将代码跑起来
+本项目提供一个apk，想直接体验的可以直接点击[WeAr](https://github.com/91Shenlan/WeAr/blob/master/WeAr.apk)下载到本地安装即可；当然也可以用android studio将代码跑起来
 
 
 
