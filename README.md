@@ -15,7 +15,7 @@
 
 
 ### Requirements
-1. 首先是手机必须支持AR，具体可用的机型可以参考AR官网
+1. 首先是手机必须支持AR，具体可用的机型可以参考AR官网（建议使用Pixel 2，因为默认比较复杂，有一些手机即使支持AR也会出现加载失败问题）
 [Support Devices](https://developers.google.com/ar/discover/supported-devices)；
 1. 其次就是必须在google play上下载ARCore并安装，该软件为AR提供一些基础ARCore；
 2. 最后确保系统版本在7及以上。
