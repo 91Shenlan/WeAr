@@ -121,15 +121,7 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
     private float zRotateAngle = 0f;
     private float randomTranslateValue;
     private float halfWidthOftheBox = 0.09f;
-    //    private float robotleftX = 0.0676f;
-    //    private float rightX = 0.41f;
-    //    private float robotRightX = 0.06200808f;
-    //    private float UpZ = 0.32f;
-    //    private float robotUpZ = 0.08f;
-    //    private float DownZ = 0.44f;
-    //    private float robotDownZ = 0.143f;
-    //    private float robotY = 0.065f;
-    //    private float leftX = 0.5f;
+  
     private float pressTime;
     private float robotY = 0.14f;
     private float jumpDistance;
@@ -427,15 +419,6 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
             // Compute lighting from average intensity of the image.
             final float lightIntensity = frame.getLightEstimate().getPixelIntensity();
 
-            //            // Visualize tracked points.
-            //            PointCloud pointCloud = frame.acquirePointCloud();
-            //            this.pointCloud.update(pointCloud);
-            //            //2、绘制检测到的特征点
-            //            this.pointCloud.draw(viewmtx, projmtx);
-            //
-            //            // Application is responsible for releasing the point cloud resources after
-            //            // using it.
-            //            pointCloud.release();
 
             // Check if we detected at least one plane. If so, hide the loading message.
             if (messageSnackbar != null) {
@@ -573,14 +556,6 @@ public class HelloArActivity extends AppCompatActivity implements GLSurfaceView.
 
             // Compute lighting from average intensity of the image.
             final float lightIntensityNew = frame.getLightEstimate().getPixelIntensity();
-
-            //            PointCloud pointCloud = frame.acquirePointCloud();
-            //            this.pointCloud.update(pointCloud);
-            //            this.pointCloud.draw(viewmtxNew, projmtxNew);
-            //
-            //            // Application is responsible for releasing the point cloud resources after
-            //            // using it.
-            //            pointCloud.release();
 
             // Check if we detected at least one plane. If so, hide the loading message.
             if (messageSnackbar != null) {
